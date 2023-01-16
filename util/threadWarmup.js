@@ -11,20 +11,19 @@ const CATEGORY = 'General';
 
 module.exports.threadWarmup = async function () {
     try {
-        for(let i=OFFSET; i <= MAX_ITEMS; i+=LIMIT){
-                const threads = await queryClientForThreadsByCategory(i, i+10, CATEGORY, IS_TESTNET);
-                threads.forEach(async thread => {
-                    const key = generateAgoraThreadsRedisKey(IS_TESTNET, thread.category);
-                    await redisClient.lpush(key, JSON.stringify(thread));
-                    await redisClient.ltrim(key, 0 , MAX_CACHED_THREADS);
-                });
-                if(threads.length < LIMIT) {
-                    break;
-                }
+        for (let i = OFFSET; i <= MAX_ITEMS; i += LIMIT) {
+            const threads = await queryClientForThreadsByCategory(i, i + 10, CATEGORY, IS_TESTNET);
+            threads.forEach(async thread => {
+                const key = generateAgoraThreadsRedisKey(IS_TESTNET, thread.category);
+                await redisClient.lpush(key, JSON.stringify(thread));
+                await redisClient.ltrim(key, 0, MAX_CACHED_THREADS);
+            });
+            if (threads.length < LIMIT) {
+                break;
+            }
         }
 
     } catch (error) {
         console.log(`warm up failed! -> ${error}`)
     }
 }
-

@@ -1,36 +1,20 @@
 const ADDRESS = 'terra1lpccq0w9e36nlzhx3m6t8pphx8ncavslyul29g';
-const {FCD_URL, LCD_URL, TESTNET_LCD_URL} = require('../constants');
+const { FCD_URL, LCD_URL, TESTNET_LCD_URL } = require('../constants');
 const { curly } = require("node-libcurl");
 
 const getPost = async (offset = 0, limit = 100) => {
-    try {
-      const { data } = await curly.get(`${FCD_URL}/v1/txs?offset=${offset}&limit=${limit}&account=${ADDRESS}`);
-      return { ...data };
-    } catch (err) {
+  try {
+    const { data } = await curly.get(`${FCD_URL}/v1/txs?offset=${offset}&limit=${limit}&account=${ADDRESS}`);
+    return { ...data };
+  } catch (err) {
     return { err };
   }
 };
 
-//Get Transaction Info By TxHash
-exports.getTransactionInfo = async(req, res) => {
-  try {
-  const {txHash} = req.params;
-  const {isTestnet} = req.query;
-
-
-  const lcdUrl = isTestnet ? TESTNET_LCD_URL : LCD_URL
-  const result = await curly.get(`${lcdUrl}/cosmos/tx/v1beta1/txs/${txHash}`);
-  return res.status(200).json(result?.data ?? {});
-  }
-  catch(err) {
-    res.status(500).json('Unexpected Error!');
-  }
-}
-
 // Find a single list with a listId
 exports.getClubPosts = async (req, res) => {
   try {
-    const {offset, limit} = req?.query;
+    const { offset, limit } = req?.query;
     const parseIntOffset = parseInt(offset);
     const parseIntLimit = parseInt(limit);
     const posts = await getPost(parseIntOffset, parseIntLimit);
@@ -47,7 +31,7 @@ exports.getTaxRate = async (_, res) => {
     const result = await curly.get(`${LCD_URL}/terra/treasury/v1beta1/tax_rate`);
     return res.status(200).json(result?.data ?? {});
   }
-  catch(err) {
+  catch (err) {
     res.status(500).json('Unexpected Error!');
   }
 }
@@ -55,16 +39,14 @@ exports.getTaxRate = async (_, res) => {
 // Get Denom Tax Caps
 exports.getTaxCap = async (req, res) => {
   try {
-    const {denom} = req.params;
-    if(!denom) {
+    const { denom } = req.params;
+    if (!denom) {
       return res.status(400).json("Invalid request, please add denom with request");
     }
     const result = await curly.get(`${LCD_URL}/terra/treasury/v1beta1/tax_caps/${denom}`);
     return res.status(200).json(result?.data ?? {});
   }
-  catch(err) {
+  catch (err) {
     res.status(500).json('Unexpected Error!');
   }
 }
-
-
