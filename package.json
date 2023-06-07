@@ -4,6 +4,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
+    "build": "node server.js",
     "warm": "node -e 'require(\"./util/threadWarmup\").threadWarmup()'"
   },
   "license": "MIT",
